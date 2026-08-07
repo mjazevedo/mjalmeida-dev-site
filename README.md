@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# mjalmeida-dev
 
-## Getting Started
+Portfólio interativo de **Matheus Azevedo** — Desenvolvimento e Arquitetura de Software.
+Conceito visual: _"Arquitetura Digital em Movimento"_ — uma cena 3D abstrata de uma
+arquitetura de software (núcleo + módulos orbitais + fluxo de dados) com degradação
+progressiva em três níveis de experiência.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router) + React 19 + TypeScript estrito
+- Tailwind CSS v4 (design tokens em `src/app/globals.css` via `@theme`)
+- Three.js + React Three Fiber + drei + postprocessing (bloom, apenas no tier full)
+- motion (animações), Zod (validação do formulário)
+
+## Níveis de experiência (degradação progressiva)
+
+Detectados em `src/hooks/useExperienceTier.ts`:
+
+| Tier | Condição | Resultado |
+| --- | --- | --- |
+| `full` | Desktop com WebGL e CPU razoável | Cena completa: shader fresnel, bloom, parallax, scroll-driven |
+| `reduced` | Mobile ou `hardwareConcurrency < 4` | Sem bloom/parallax, menos partículas, dpr menor |
+| `static` | `prefers-reduced-motion`, sem WebGL, ou erro no canvas | Somente o fallback SVG estático |
+
+O conteúdo nunca depende do canvas: toda a informação está em HTML indexável.
+
+## Comandos
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # desenvolvimento
+npm run build   # build de produção
+npm run start   # servidor de produção
+npm run lint    # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Variáveis de ambiente
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copie `.env.example` para `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `CONTACT_EMAIL` — e-mail que recebe as mensagens do formulário
+- `RESEND_API_KEY` — chave da API do [Resend](https://resend.com)
 
-## Learn More
+Sem essas variáveis, o formulário funciona em desenvolvimento (aceita sem entregar)
+e retorna erro amigável em produção.
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+src/
+├── app/                 # rotas, layout, metadata, sitemap, robots, og-image, api/contato
+├── components/
+│   ├── layout/          # Header, MobileMenu, Footer, SkipLink
+│   ├── sections/        # Hero, Sobre, Serviços, Projetos, Tecnologias, Processo, etc.
+│   ├── three/           # cena 3D, fallbacks, assets (shaders/texturas), módulos
+│   ├── forms/           # ContactForm
+│   ├── motion/          # Reveal (respeta prefers-reduced-motion)
+│   ├── seo/             # JSON-LD
+│   └── ui/              # Button, Badge, InteractiveCard
+├── content/             # dados tipados: serviços, projetos, tecnologias, processo, sobre
+├── hooks/               # useExperienceTier
+└── lib/                 # constantes, schema de contato, rate limit
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Conteúdo
 
-## Deploy on Vercel
+Textos e dados ficam em `src/content/*.ts` — edite sem tocar em componentes.
+Itens a revisar antes de publicar (placeholders sinalizados):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `src/config/site.ts` — URL real e links de GitHub/LinkedIn
+- `src/content/about.ts` — biografia e trajetória
+- `src/content/projects.ts` — estudos de caso (marcados como "em elaboração")
+- `src/content/technologies.ts` — classificação de domínio por tecnologia
+- `src/components/sections/ContactSection.tsx` — e-mail de contato exibido
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Segurança
+
+- Headers de segurança + CSP em `next.config.ts`
+- Formulário: validação Zod no cliente e servidor, honeypot, rate limit por IP,
+  e-mail em texto puro, sem exposição de erros internos
+- Nenhuma credencial no repositório (use `.env.local`)
