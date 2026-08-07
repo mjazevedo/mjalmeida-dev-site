@@ -3,7 +3,7 @@ export const siteConfig = {
   role: "Desenvolvimento e Arquitetura de Software",
   description:
     "Desenvolvimento de APIs, aplicações web, integrações e arquiteturas de software com foco em segurança, organização e evolução.",
-  url: "https://mjalmeida.dev",
+  url: "https://mjalmeidadev.com.br",
   links: {
     github: "#",
     linkedin: "#",

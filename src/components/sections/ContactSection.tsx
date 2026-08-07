@@ -5,8 +5,8 @@ import { ContactForm } from "@/components/forms/ContactForm";
 const CONTACT_CHANNELS = [
   {
     label: "E-mail",
-    value: "contato@mjalmeida.dev",
-    href: "mailto:contato@mjalmeida.dev",
+    value: "contato@mjalmeidadev.com.br",
+    href: "mailto:contato@mjalmeidadev.com.br",
   },
   { label: "LinkedIn", value: "Perfil profissional", href: siteConfig.links.linkedin },
   { label: "GitHub", value: "Repositórios e código", href: siteConfig.links.github },
